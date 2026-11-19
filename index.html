@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <title>Career Hunter</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #101827;
+      color: #f8fafc;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    h1 { color: #38bdf8; }
+    .job {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+    a { color: #38bdf8; }
+  </style>
+</head>
+<body>
+  <h1>Career Hunter</h1>
+  <p>Oferty dopasowane do mojej kariery</p>
+  <div id="jobs">Ładowanie ofert...</div>
+
+  <script>
+    async function loadJobs() {
+      const container = document.getElementById("jobs");
+
+      try {
+        const response = await fetch("./jobs.json", {
+          cache: "no-store"
+        });
+        if (!response.ok) throw new Error("Brak danych");
+
+        const jobs = await response.json();
+        container.replaceChildren();
+
+        if (!jobs.length) {
+          container.textContent = "Brak ofert.";
+          return;
+        }
+
+        for (const job of jobs) {
+          const card = document.createElement("div");
+          card.className = "job";
+
+          const title = document.createElement("h2");
+          title.textContent = job.title || "Bez nazwy";
+
+          const company = document.createElement("p");
+          company.textContent = job.company || "";
+
+          const link = document.createElement("a");
+          link.textContent = "Zobacz ofertę";
+          link.href = job.url || "#";
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+
+          card.append(title, company, link);
+          container.append(card);
+        }
+      } catch (error) {
+        container.textContent =
+          "Nie udało się wczytać ofert.";
+      }
+    }
+
+    loadJobs();
+  </script>
+</body>
+</html>
